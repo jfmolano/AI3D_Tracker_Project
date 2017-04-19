@@ -18,9 +18,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
 	image = frame.array
+
+	gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	ret,thresh1 = cv2.threshold(gray_image,200,255,cv2.THRESH_BINARY)
  
 	# show the frame
-	cv2.imshow("Frame", image)
+	cv2.imshow("Frame", thresh1)
 	key = cv2.waitKey(1) & 0xFF
  
 	# clear the stream in preparation for the next frame
