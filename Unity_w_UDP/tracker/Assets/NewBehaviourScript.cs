@@ -28,7 +28,7 @@ int z;
 	
 	// Update is called once per frame
 	void Update () {
-		GameObject.Find("Sphere").transform.position = new Vector3(x, y, z);
+		GameObject.Find("unitychan").transform.position = new Vector3(x, y, z);
 		//GameObject.Find("Sphere/Texto").GetComponent<TextMesh>().text = "" + x;
 	}
 

@@ -11,22 +11,23 @@ print "message:", MESSAGE
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
+delay = 0.5
 
 while True:
 	sock.sendto("1", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("2", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("3", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("4", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("3", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("2", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("1", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	sock.sendto("-1", (UDP_IP, UDP_PORT))
-	time.sleep(0.1)
+	time.sleep(delay)
 	print "done"
