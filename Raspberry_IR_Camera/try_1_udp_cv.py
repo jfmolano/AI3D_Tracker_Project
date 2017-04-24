@@ -9,7 +9,7 @@ import threading
 import serial
 import codecs
 
-UDP_IP = "157.253.213.109"
+UDP_IP = "192.168.0.25"
 UDP_PORT = 8080
 
 #Example line: b'ypr\t56.41\t-16.97\t42.21\r\n'
@@ -86,7 +86,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		print("x: " + str(cX) + " " + "y: " + str(cY) + " y: " + str(y) + " p: " + str(p) + " r: " + str(r))
 		sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
-		sock.sendto(bytes(str(x_real) + ";0","UTF-8"), (UDP_IP, UDP_PORT)) 
+		sock.sendto(bytes(str(x_real) + ";0" + ";" + str(y) + ";" + str(p) + ";" + str(r),"UTF-8"), (UDP_IP, UDP_PORT)) 
 	# show the frame
 	cv2.imshow("Frame", image)
 	key = cv2.waitKey(1) & 0xFF
