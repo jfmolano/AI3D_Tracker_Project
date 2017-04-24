@@ -11,9 +11,9 @@ public class NewBehaviourScript : MonoBehaviour {
 GameObject sphere;
 UdpClient client;
 Thread receiveThread;
-int x;
-int y;
-int z;
+float x;
+float y;
+float z;
 	// Use this for initialization
 	void Start () {
 		//sphere = new GameObject.Find("/Sphere");
@@ -49,9 +49,10 @@ int z;
  				print("data");
                 // Bytes mit der UTF8-Kodierung in das Textformat kodieren.
                 string text = Encoding.UTF8.GetString(data);
- 				print("text " + text);
-                x = int.Parse(text);
-               
+                string[] arr_text = text.Split(new string[] { ";" }, StringSplitOptions.None);
+ 				print("text " + arr_text[0] + " " + arr_text[1]);
+                x = float.Parse(arr_text[0]);
+               	y = float.Parse(arr_text[1]);
             }
             catch (Exception err)
             {
