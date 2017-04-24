@@ -7,17 +7,38 @@ import cv2
 import socket
 import threading
 import serial
+import codecs
 
 UDP_IP = "157.253.213.109"
 UDP_PORT = 8080
 
+#Example line: b'ypr\t56.41\t-16.97\t42.21\r\n'
 def get_acc():
+	global y
+	global p
+	global r
+	y = 0
+	p = 0
+	r = 0
 	with serial.Serial('/dev/rfcomm0', 9600, timeout=10) as ser:
 		x = ser.read()          # read one byte
 		s = ser.read(10)        # read up to ten bytes (timeout)
 		while True:
 			line = ser.readline()   # read a '\n' terminated line
-			print(line)
+			if line.startswith(bytes("ypr","UTF-8")):
+				#print(type(str(line,'utf-8')))
+				#print(str(line,'utf-8'))
+				str_line = str(line,'utf-8')
+				new_line = str_line.replace("\t",";").replace("\r\n",";").replace("ypr","")
+				#print(new_line.split(";"))
+				arr = new_line.split(";")
+				y = float(arr[1])
+				p = float(arr[2])
+				r = float(arr[3])
+				#print((y, p, r))
+				#new_line = codecs.decode(str(line,"utf-8"),"unicode_escape").replace(bytes("ypr","UTF-8"),bytes("","UTF-8")).replace(bytes("/r/n","UTF-8"),bytes("","UTF-8"))
+				#print(new_line)
+			#print(line)
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -62,7 +83,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 		x_real = (cX - 100.0)*12.0/(300.0)-5.0
 		y_real = (cY - 100.0)*12.0/(300.0)-5.0
-		#print("x: " + str(cX) + " " + "y: " + str(cY) + "x_real: " + str(x_real))
+		print("x: " + str(cX) + " " + "y: " + str(cY) + " y: " + str(y) + " p: " + str(p) + " r: " + str(r))
 		sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 		sock.sendto(bytes(str(x_real) + ";0","UTF-8"), (UDP_IP, UDP_PORT)) 
