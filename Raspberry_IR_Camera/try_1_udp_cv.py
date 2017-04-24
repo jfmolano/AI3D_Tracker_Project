@@ -5,9 +5,19 @@ import time
 import imutils
 import cv2
 import socket
+import threading
+import serial
 
 UDP_IP = "157.253.213.109"
 UDP_PORT = 8080
+
+def get_acc():
+	with serial.Serial('/dev/rfcomm0', 9600, timeout=10) as ser:
+		x = ser.read()          # read one byte
+		s = ser.read(10)        # read up to ten bytes (timeout)
+		while True:
+			line = ser.readline()   # read a '\n' terminated line
+			print(line)
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -17,6 +27,10 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
  
 # allow the camera to warmup
 time.sleep(0.1)
+
+t = threading.Thread(target=get_acc)
+t.daemon = True
+t.start()
  
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -47,7 +61,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		cv2.putText(image, "center", (cX - 20, cY - 20),
 		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 		x_real = (cX - 100.0)*12.0/(300.0)-5.0
-		print("x: " + str(cX) + " " + "y: " + str(cY) + "x_real: " + str(x_real))
+		y_real = (cY - 100.0)*12.0/(300.0)-5.0
+		#print("x: " + str(cX) + " " + "y: " + str(cY) + "x_real: " + str(x_real))
 		sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 		sock.sendto(bytes(str(x_real) + ";0","UTF-8"), (UDP_IP, UDP_PORT)) 
