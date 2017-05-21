@@ -52,7 +52,8 @@ time.sleep(0.1)
 #t = threading.Thread(target=get_acc)
 #t.daemon = True
 #t.start()
- 
+x_anterior = 0
+y_anterior = 0
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 	# grab the raw NumPy array representing the image, then initialize the timestamp
@@ -83,9 +84,22 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 		x_real = (cX-20.0) / 600.0
 		y_real = (480.0 - (cY-20.0))/ 400.0
+		x_diff = x_real - x_anterior
+		y_diff = y_real - y_anterior
+		while abs(x_real - x_anterior)>0.1 or abs(y_real - y_anterior)>0.1:
+			print("ENTRA")
+			if abs(x_real - x_anterior)>0.1:
+				x_anterior = x_anterior + x_diff/5.0
+			if abs(y_real - y_anterior)>0.1:
+				y_anterior = y_anterior + y_diff/5.0
+			print("x: " + str(x_anterior) + " " + "y: " + str(y_anterior))
+			sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+			sock.sendto(bytes(str(x_anterior) + ";" + str(y_anterior),"UTF-8"), (UDP_IP, UDP_PORT))
+			time.sleep(0.025)
+		x_anterior = x_real
+		y_anterior = y_real
 		print("x: " + str(cX) + " " + "y: " + str(cY))
-		sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
+		sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 		sock.sendto(bytes(str(x_real) + ";" + str(y_real),"UTF-8"), (UDP_IP, UDP_PORT)) 
 	# show the frame
 	#cv2.imshow("Frame", image)

@@ -65,7 +65,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	cnts = cv2.findContours(thresh1.copy(), cv2.RETR_EXTERNAL,
 	cv2.CHAIN_APPROX_SIMPLE)
 	cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-
+	ponderado_x = 0
+	ponderado_y = 0
 	for c in cnts:
 		# compute the center of the contour
 		M = cv2.moments(c)
@@ -83,6 +84,10 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 		x_real = (cX-20.0) / 600.0
 		y_real = (480.0 - (cY-20.0))/ 400.0
+		ponderado_x = x_real*0.75 + ponderado_x*0.25
+		ponderado_y = y_real*0.75 + ponderado_y*0.25
+		x_real = ponderado_x
+		y_real = ponderado_y
 		print("x: " + str(cX) + " " + "y: " + str(cY))
 		sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
